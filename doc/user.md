@@ -2,11 +2,12 @@
 
 ## Register User
 
-### Request
 <pre>
 Method   : POST
 Endpoint : /api/users
 </pre>
+
+### Request
 
 Request Header :
 ```json
@@ -47,11 +48,12 @@ Response Body (Failed) :
 
 ## Login User
 
-### Request
 <pre>
 Method   : POST
 Endpoint : /api/users/login
 </pre>
+### Request
+
 
 Request Header :
 ```json
@@ -90,18 +92,17 @@ Response Body (Failed) :
 ```
 
 ## Get User
-
-### Request
 <pre>
 Method   : GET
 Endpoint : /api/users/current
 </pre>
 
+### Request
 
 Request Header :
 ```json
 {
-    "X-API-key"     : "API_key"
+    "X-API-key"     : "API_key",
     "Authorization" : "loginToken"
 }
 ```
@@ -127,18 +128,18 @@ Response Body (Failed) :
 ```
 
 ## Update User
-
-### Request
 <pre>
 Method   : PATCH
 Endpoint : /api/users/current
 </pre>
 
+### Request
+
 Request Header :
 ```json
 {
     "X-API-key"     : "API_key",
-    "Authorization" : "loginTokem"
+    "Authorization" : "loginToken"
 
 }
 ```
@@ -172,12 +173,12 @@ Response Body (Failed) :
 ```
 
 ## Logout User
-
-### Request
 <pre>
 Method   : DELETE
 Endpoint : /api/users/current
 </pre>
+### Request
+
 
 Request Header :
 ```json
