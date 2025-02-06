@@ -1,6 +1,6 @@
 import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
-import { toUserResponse, type CreateUserRequest, type UserResponse } from "../model/user-model";
+import { toUserResponse, type CreateUserRequest, type LoginUserRequest, type UserResponse } from "../model/user-model";
 import { UserValidation } from "../validation/user-validation";
 import { Validate } from "../validation/validation";
 
@@ -38,6 +38,11 @@ export class UserService {
         // mengembalikan promise 
         return toUserResponse(user);
 
+
+    }
+
+    static async login(request : LoginUserRequest ) : Promise<UserResponse> {
+        const loginRequest = Validate.validate(UserValidation.LOGIN, request);
 
     }
 }
