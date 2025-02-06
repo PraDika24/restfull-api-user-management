@@ -6,7 +6,7 @@ export const errorMiddleware = async (error: Error, req: Request, res: Response,
     // jika error nya dalam validasi
     if (error instanceof ZodError){
         res.status(400).json({
-            errors: "Validate Error",
+            error: "Validate Error",
             message: error.errors 
         });
     }

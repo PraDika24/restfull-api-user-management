@@ -23,7 +23,7 @@ export type LoginUserRequest = {
 };
 
 // db helper
-export function toUserResponse(user : User) {
+export function toUserResponse(user : User) : UserResponse {
     return {
         username: user.username,
         name: user.name

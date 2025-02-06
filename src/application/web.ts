@@ -9,6 +9,7 @@ const port: number = 8000;
 //app.use(express.urlencoded({ extended: true }));
 
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); 
 app.use(publicRouter);
 app.use(errorMiddleware);
 

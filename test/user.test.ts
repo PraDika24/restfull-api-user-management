@@ -1,4 +1,4 @@
-import { it, describe, expect, afterEach } from "bun:test"
+import { it, describe, expect, afterEach, beforeEach, beforeAll, afterAll } from "bun:test"
 import supertest from "supertest"
 import { app } from "../src/application/web";
 import { logger } from "../src/application/logging";
@@ -9,7 +9,7 @@ describe('POST /api/users', () => {
 
     afterEach( async () => {
         await  UserTest.delete();
-    })
+    });
 
     it('should reject register user if request is invalid', async () =>{
         const response = await supertest(app)
@@ -23,7 +23,7 @@ describe('POST /api/users', () => {
 
         logger.debug(response.body);
         expect(response.status).toBe(400);
-        expect(response.body.errors).toBeDefined();
+        expect(response.body.error).toBeDefined();
     });
 
     it('should  register user', async () =>{
@@ -40,5 +40,62 @@ describe('POST /api/users', () => {
         expect(response.status).toBe(200);
         expect(response.body.data.username).toBe("userTest");
         expect(response.body.data.name).toBe("userTest");
+    });
+});
+
+
+describe('POST /api/users/login', () => {
+
+    
+    beforeEach(async () => {
+        await UserTest.create();
+    });
+    
+    afterEach(async () => {
+        await UserTest.delete();
+    });
+
+    it('should be able login', async () =>{
+        const response = await supertest(app)
+                .post('/api/users/login')
+                .send({
+                    username: "userTest", 
+                    password: "userTest12"
+                });
+
+        logger.debug(response.body);
+        expect(response.status).toBe(200);
+        expect(response.body.data.username).toBe("userTest");
+        expect(response.body.data.name).toBe("userTest")
+        expect(response.body.data.token).toBeDefined();
+    });
+
+    it('should reject login if username invalid', async () =>{
+        const response = await supertest(app)
+                .post('/api/users/login')
+                .type('form')
+                .send({
+                    username: 'user56',
+                    password: 'userTest12'
+                });
+
+        logger.debug(response.body);
+        expect(response.status).toBe(400);
+        expect(response.body.error).toBeDefined();
+    });
+
+
+    it('should reject login if password invalid', async () =>{
+        const response = await supertest(app)
+                .post('/api/users/login')
+                .type('form')
+                .send({
+                    username: 'userTest12',
+                    password: 'testiMonianjg12'
+                });
+
+        logger.debug(response.body);
+        expect(response.status).toBe(400);
+        expect(response.body.error).toBeDefined();
     });
 });

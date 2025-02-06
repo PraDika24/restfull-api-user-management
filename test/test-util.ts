@@ -9,4 +9,20 @@ export class UserTest {
             }
         })
     }
+
+    static async create() {
+
+        const hashedPassword = await Bun.password.hash("userTest12", {
+            algorithm: "bcrypt",
+            cost:10
+        });
+        
+        await prismaClient.user.create({
+           data:{
+            username: "userTest",
+            name: "userTest",
+            password: hashedPassword
+           }
+        })
+    }
 }

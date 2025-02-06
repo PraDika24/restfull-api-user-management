@@ -1,3 +1,4 @@
+import { randomUUIDv7 } from "bun";
 import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
 import { toUserResponse, type CreateUserRequest, type LoginUserRequest, type UserResponse } from "../model/user-model";
@@ -43,6 +44,36 @@ export class UserService {
 
     static async login(request : LoginUserRequest ) : Promise<UserResponse> {
         const loginRequest = Validate.validate(UserValidation.LOGIN, request);
+
+        let user = await prismaClient.user.findUnique({
+            where: {
+                username: loginRequest.username
+            }
+        });
+
+
+        if(!user){
+            throw new ResponseError(400, "Username atau Password Error");
+        }
+
+        const passIsMatch = await Bun.password.verify(loginRequest.password, user.password);
+
+        if (!passIsMatch){
+            throw new ResponseError(400, "Username atau Password Error")
+        }
+
+        user = await prismaClient.user.update({
+            where:{
+                username: loginRequest.username
+            },
+            data: {
+                token: randomUUIDv7()
+            }
+        });
+
+        const response = toUserResponse(user);
+        response.token = user.token!;
+        return response;
 
     }
 }
