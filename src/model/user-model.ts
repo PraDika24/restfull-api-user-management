@@ -9,10 +9,16 @@ export type UserResponse = {
 };
 
 
-// struktur data request
+// struktur data request regiter
 export type CreateUserRequest = {
     username: string,
     name: string,
+    password: string
+};
+
+// struktur data request login
+export type LoginUserRequest = {
+    username: string,
     password: string
 };
 
