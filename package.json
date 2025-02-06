@@ -2,6 +2,9 @@
   "name": "api-contact-management",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "start": "bun run src/application/web.ts"
+  },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/express": "^5.0.0",

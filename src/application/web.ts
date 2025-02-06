@@ -8,7 +8,7 @@ const port: number = 8000;
 // Middleware untuk parsing form-data
 //app.use(express.urlencoded({ extended: true }));
 
-app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(publicRouter);
 app.use(errorMiddleware);
 
