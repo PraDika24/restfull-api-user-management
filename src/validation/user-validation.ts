@@ -32,5 +32,16 @@ export class UserValidation {
         .regex(/(?=.*\d)/, { message: "Password harus mengandung setidaknya satu angka." })
     });
 
-    
+    static readonly UPDATE : ZodType = z.object({
+        password: z
+        .string()
+        .min(8, { message: "Password harus terdiri dari minimal 8 karakter." }) // Menambahkan panjang minimal
+        .max(100, { message: "Password tidak boleh lebih dari 100 karakter." })
+        .regex(/(?=.*[A-Z])/, { message: "Password harus mengandung setidaknya satu huruf kapital." })
+        .regex(/(?=.*\d)/, { message: "Password harus mengandung setidaknya satu angka." }),
+        name: z
+        .string()
+        .min(1, { message: "Nama tidak boleh kosong." })
+        .max(100, { message: "Nama tidak boleh lebih dari 100 karakter." })
+    }).partial();// agar menjadi bisa salah satu
 }

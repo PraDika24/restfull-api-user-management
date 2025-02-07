@@ -22,6 +22,12 @@ export type LoginUserRequest = {
     password: string
 };
 
+export type UpdateUserRequest = {
+    name?: string,
+    password?: string
+};
+
+
 // db helper
 export function toUserResponse(user : User) : UserResponse {
     return {

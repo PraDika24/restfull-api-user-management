@@ -1,7 +1,7 @@
 import { randomUUIDv7 } from "bun";
 import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
-import { toUserResponse, type CreateUserRequest, type LoginUserRequest, type UserResponse } from "../model/user-model";
+import { toUserResponse, type CreateUserRequest, type LoginUserRequest, type UpdateUserRequest, type UserResponse } from "../model/user-model";
 import { UserValidation } from "../validation/user-validation";
 import { Validate } from "../validation/validation";
 import type { User } from "@prisma/client";
@@ -78,8 +78,36 @@ export class UserService {
 
     }
 
-
+    // Logic Get User
     static async get(user: User) : Promise<UserResponse> {
         return toUserResponse(user);
     }
+
+
+    static async update( user: User, request: UpdateUserRequest): Promise<UserResponse> {
+        const updateRequest = Validate.validate(UserValidation.UPDATE, request);
+
+        // jika updatenya nama
+        if (updateRequest.name) {
+            user.name = updateRequest.name;
+        }
+
+        // jika ada password
+        if (updateRequest.password) {
+            user.password = await Bun.password.hash(updateRequest.password, {
+                algorithm: "bcrypt",
+                cost: 10
+            });
+        }
+
+        const response = await prismaClient.user.update({
+            where: {
+                username: user.username
+            },
+            data: user
+        });
+
+        return toUserResponse(response);
+
+    } 
 }

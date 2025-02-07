@@ -3,6 +3,7 @@ import supertest from "supertest"
 import { app } from "../src/application/web";
 import { logger } from "../src/application/logging";
 import { UserTest } from "./test-util";
+import { password } from "bun";
 
 
 describe('POST /api/users', () => {
@@ -131,4 +132,68 @@ describe('GET /api/users/current', () => {
         expect(response.status).toBe(401);
         expect(response.body.error).toBeDefined();
     });
-})
+});
+
+
+describe('PATCH /api/users/current', () => {
+    beforeEach(async () => {
+        await UserTest.createAuth();
+    });
+    
+    afterEach(async () => {
+        await UserTest.delete();
+    });
+
+
+    it('should be reject if requset invalid', async () => {
+
+        const response = await supertest(app)
+                    .patch('/api/users/current')
+                    .type('form')
+                    .set('X-Auth-Token', 'test')
+                    .send({
+                        name: '',
+                        password: ''
+                    })
+        
+        logger.debug(response.body);
+        expect(response.status).toBe(400);
+        expect(response.body.error).toBeDefined();
+    });
+
+    it('should be reject if token empty', async() => {
+
+        const response = await supertest(app)
+                .patch('/api/users/current')
+                .set('X-Auth-Token', '')
+                .type('form')
+                .send({
+                    name: 'userTest',
+                    password: 'userTest'
+                })
+            
+            logger.debug(response.body);
+            expect(response.status).toBe(401);
+            expect(response.body.error).toBeDefined();
+    });
+
+    it('Should be able to update', async() => {
+
+        const response = await supertest(app)
+                    .patch('/api/users/current')
+                    .type('form')
+                    .set('X-Auth-Token', 'test')
+                    .send({
+                        name: "Windut Hehe"
+                    });
+                
+                logger.debug(response.body);
+                expect(response.status).toBe(200);
+                expect(response.body.data.name).toBe('Windut Hehe');
+                expect(response.body.data.username).toBe('userTest');
+
+    });
+
+
+    
+});
