@@ -184,13 +184,18 @@ describe('PATCH /api/users/current', () => {
                     .type('form')
                     .set('X-Auth-Token', 'test')
                     .send({
-                        name: "Windut Hehe"
+                        password: "WindutHehe12"
                     });
                 
                 logger.debug(response.body);
                 expect(response.status).toBe(200);
-                expect(response.body.data.name).toBe('Windut Hehe');
+                expect(response.body.data.name).toBe('userTest');
                 expect(response.body.data.username).toBe('userTest');
+
+                const user = await UserTest.get();
+                const compare = await Bun.password.verify("WindutHehe12", user.password);
+
+                expect(compare).toBe(true);
 
     });
 
