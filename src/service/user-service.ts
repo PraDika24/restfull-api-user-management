@@ -4,6 +4,7 @@ import { ResponseError } from "../error/response-error";
 import { toUserResponse, type CreateUserRequest, type LoginUserRequest, type UserResponse } from "../model/user-model";
 import { UserValidation } from "../validation/user-validation";
 import { Validate } from "../validation/validation";
+import type { User } from "@prisma/client";
 
 export class UserService {
 
@@ -75,5 +76,10 @@ export class UserService {
         response.token = user.token!;
         return response;
 
+    }
+
+
+    static async get(user: User) : Promise<UserResponse> {
+        return toUserResponse(user);
     }
 }

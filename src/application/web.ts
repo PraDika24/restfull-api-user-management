@@ -1,6 +1,7 @@
 import express from "express"
 import { publicRouter } from "../route/public-api";
 import { errorMiddleware } from "../middleware/error-middleware";
+import { authRouter } from "../route/auth-api";
 
 export const app = express();
 const port: number = 8000;
@@ -9,8 +10,8 @@ const port: number = 8000;
 //app.use(express.urlencoded({ extended: true }));
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json()); 
 app.use(publicRouter);
+app.use(authRouter);
 app.use(errorMiddleware);
 
 
