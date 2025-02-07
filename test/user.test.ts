@@ -202,3 +202,40 @@ describe('PATCH /api/users/current', () => {
 
     
 });
+
+describe('DELETE /api/users/current', () => {
+
+    beforeEach(async () => {
+        await UserTest.createAuth();
+    });
+    
+    afterEach(async () => {
+        await UserTest.delete();
+    });
+
+    it('should be able to logout', async() =>{
+        
+        const response = await supertest(app)
+                    .delete('/api/users/current')
+                    .set('X-Auth-Token', 'test')
+            
+            logger.debug(response.body);
+            expect(response.status).toBe(200);
+            expect(response.body.data.username).toBe('userTest');
+            expect(response.body.data.name).toBe('userTest');
+            const user = await UserTest.get();
+            expect(user.token).toBe(null)
+    });
+
+    it('should be reject if not have token or invalid', async() =>{
+        
+        const response = await supertest(app)
+                    .delete('/api/users/current')
+                    .set('X-Auth-Token', 'test123')
+            
+            logger.debug(response.body);
+            expect(response.status).toBe(401);
+            expect(response.body.error).toBeDefined();
+    });
+
+});
