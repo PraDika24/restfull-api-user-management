@@ -12,10 +12,13 @@ describe('POST /api/users', () => {
         await  UserTest.delete();
     });
 
+    const apiKey = Bun.env.API_KEY
+
     it('should reject register user if request is invalid', async () =>{
         const response = await supertest(app)
                 .post('/api/users')
                 .type('form')
+                .set('X-API-Key', apiKey!)
                 .send({
                     username: '',
                     name: '',
@@ -31,6 +34,7 @@ describe('POST /api/users', () => {
         const response = await supertest(app)
                 .post('/api/users')
                 .type('form')
+                .set('X-API-Key', apiKey!)
                 .send({
                     username: 'userTest',
                     name: 'userTest',
@@ -56,10 +60,13 @@ describe('POST /api/users/login', () => {
         await UserTest.delete();
     });
 
+    const apiKey = Bun.env.API_KEY
+
     it('should be able login', async () =>{
         const response = await supertest(app)
                 .post('/api/users/login')
                 .type('form')
+                .set('X-API-Key', apiKey!)
                 .send({
                     username: "userTest", 
                     password: "userTest12"
@@ -76,6 +83,7 @@ describe('POST /api/users/login', () => {
         const response = await supertest(app)
                 .post('/api/users/login')
                 .type('form')
+                .set('X-API-Key', apiKey!)
                 .send({
                     username: 'user56',
                     password: 'userTest12'
@@ -91,6 +99,7 @@ describe('POST /api/users/login', () => {
         const response = await supertest(app)
                 .post('/api/users/login')
                 .type('form')
+                .set('X-API-Key', apiKey!)
                 .send({
                     username: 'userTest12',
                     password: 'testiMonianjg12'
@@ -112,10 +121,13 @@ describe('GET /api/users/current', () => {
         await UserTest.delete();
     });
 
+    const apiKey = Bun.env.API_KEY
+
  it('should be able to get user', async () =>{
         const response = await supertest(app)
                 .get('/api/users/current')
-                .set('X-Auth-Token', 'test');
+                .set('X-Auth-Token', 'test')
+                .set('X-API-Key', apiKey!)
 
         logger.debug(response.body);
         expect(response.status).toBe(200);
@@ -126,7 +138,8 @@ describe('GET /api/users/current', () => {
     it('should not able to get user', async () =>{
         const response = await supertest(app)
                 .get('/api/users/current')
-                .set('X-Auth-Token', 'test1234');
+                .set('X-Auth-Token', 'test1234')
+                .set('X-API-Key', apiKey!)
 
         logger.debug(response.body);
         expect(response.status).toBe(401);
@@ -144,6 +157,7 @@ describe('PATCH /api/users/current', () => {
         await UserTest.delete();
     });
 
+    const apiKey = Bun.env.API_KEY
 
     it('should be reject if requset invalid', async () => {
 
@@ -151,6 +165,7 @@ describe('PATCH /api/users/current', () => {
                     .patch('/api/users/current')
                     .type('form')
                     .set('X-Auth-Token', 'test')
+                    .set('X-API-Key', apiKey!)
                     .send({
                         name: '',
                         password: ''
@@ -166,6 +181,7 @@ describe('PATCH /api/users/current', () => {
         const response = await supertest(app)
                 .patch('/api/users/current')
                 .set('X-Auth-Token', '')
+                .set('X-API-Key', apiKey!)
                 .type('form')
                 .send({
                     name: 'userTest',
@@ -183,6 +199,7 @@ describe('PATCH /api/users/current', () => {
                     .patch('/api/users/current')
                     .type('form')
                     .set('X-Auth-Token', 'test')
+                    .set('X-API-Key', apiKey!)
                     .send({
                         password: "WindutHehe12"
                     });
@@ -213,11 +230,14 @@ describe('DELETE /api/users/current', () => {
         await UserTest.delete();
     });
 
+    const apiKey = Bun.env.API_KEY
+
     it('should be able to logout', async() =>{
         
         const response = await supertest(app)
                     .delete('/api/users/current')
                     .set('X-Auth-Token', 'test')
+                    .set('X-API-Key', apiKey!)
             
             logger.debug(response.body);
             expect(response.status).toBe(200);
@@ -232,6 +252,7 @@ describe('DELETE /api/users/current', () => {
         const response = await supertest(app)
                     .delete('/api/users/current')
                     .set('X-Auth-Token', 'test123')
+                    .set('X-API-Key', apiKey!)
             
             logger.debug(response.body);
             expect(response.status).toBe(401);
