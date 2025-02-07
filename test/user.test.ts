@@ -58,6 +58,7 @@ describe('POST /api/users/login', () => {
     it('should be able login', async () =>{
         const response = await supertest(app)
                 .post('/api/users/login')
+                .type('form')
                 .send({
                     username: "userTest", 
                     password: "userTest12"
@@ -99,3 +100,35 @@ describe('POST /api/users/login', () => {
         expect(response.body.error).toBeDefined();
     });
 });
+
+describe('GET /api/users/current', () => {
+
+    beforeEach(async () => {
+        await UserTest.createAuth();
+    });
+    
+    afterEach(async () => {
+        await UserTest.delete();
+    });
+
+ it('should be able to get user', async () =>{
+        const response = await supertest(app)
+                .get('/api/users/current')
+                .set('X-Auth-Token', 'test');
+
+        logger.debug(response.body);
+        expect(response.status).toBe(200);
+        expect(response.body.data.username).toBe('userTest');
+        expect(response.body.data.name).toBe('userTest');
+    });
+
+    it('should not able to get user', async () =>{
+        const response = await supertest(app)
+                .get('/api/users/current')
+                .set('X-Auth-Token', 'test1234');
+
+        logger.debug(response.body);
+        expect(response.status).toBe(401);
+        expect(response.body.error).toBeDefined();
+    });
+})
