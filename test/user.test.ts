@@ -241,8 +241,7 @@ describe('DELETE /api/users/current', () => {
             
             logger.debug(response.body);
             expect(response.status).toBe(200);
-            expect(response.body.data.username).toBe('userTest');
-            expect(response.body.data.name).toBe('userTest');
+            expect(response.body.data).toBe('OK');
             const user = await UserTest.get();
             expect(user.token).toBe(null)
     });
