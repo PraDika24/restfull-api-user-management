@@ -1,6 +1,7 @@
-import type { User } from "@prisma/client";
+import type { Contact, User } from "@prisma/client";
 import { prismaClient } from "../src/application/database";
 
+export const apiKey = Bun.env.API_KEY;
 
 export class UserTest {
     static async delete(){
@@ -58,5 +59,17 @@ export class UserTest {
         }
 
         return user;
+    }
+}
+
+
+
+export class ContactTest {
+    static async deleteAll() {
+        await prismaClient.contact.deleteMany({
+            where: {
+                username: 'userTest'
+            }
+        })
     }
 }

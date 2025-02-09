@@ -1,9 +1,8 @@
-import { it, describe, expect, afterEach, beforeEach, beforeAll, afterAll } from "bun:test"
+import { it, describe, expect, afterEach, beforeEach } from "bun:test"
 import supertest from "supertest"
 import { app } from "../src/application/web";
 import { logger } from "../src/application/logging";
-import { UserTest } from "./test-util";
-import { password } from "bun";
+import { apiKey, UserTest } from "./test-util";
 
 
 describe('POST /api/users', () => {
@@ -12,7 +11,6 @@ describe('POST /api/users', () => {
         await  UserTest.delete();
     });
 
-    const apiKey = Bun.env.API_KEY
 
     it('should reject register user if request is invalid', async () =>{
         const response = await supertest(app)
@@ -60,7 +58,6 @@ describe('POST /api/users/login', () => {
         await UserTest.delete();
     });
 
-    const apiKey = Bun.env.API_KEY
 
     it('should be able login', async () =>{
         const response = await supertest(app)
@@ -121,7 +118,6 @@ describe('GET /api/users/current', () => {
         await UserTest.delete();
     });
 
-    const apiKey = Bun.env.API_KEY
 
  it('should be able to get user', async () =>{
         const response = await supertest(app)
@@ -157,7 +153,6 @@ describe('PATCH /api/users/current', () => {
         await UserTest.delete();
     });
 
-    const apiKey = Bun.env.API_KEY
 
     it('should be reject if requset invalid', async () => {
 
@@ -230,7 +225,6 @@ describe('DELETE /api/users/current', () => {
         await UserTest.delete();
     });
 
-    const apiKey = Bun.env.API_KEY
 
     it('should be able to logout', async() =>{
         
