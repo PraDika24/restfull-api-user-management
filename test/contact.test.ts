@@ -225,3 +225,45 @@ describe('POST /api/contact/:contactId', () => {
             expect(response.body.error).toBeDefined();
     });
 });
+
+
+describe('DELETE /api/contact/:contactId', () => {
+
+    beforeEach(async () => {
+        await UserTest.createAuth();
+        await ContactTest.create();
+    });
+    
+    afterEach(async () => {
+        await ContactTest.deleteAll();
+        await UserTest.delete();
+    });
+
+
+    it('should able to delete contact', async() => {
+
+        const contact = await ContactTest.get();
+        const response = await supertest(app)
+                .delete(`/api/contact/${contact.id}`)
+                .set('X-API-key', apiKey!)
+                .set('X-Auth-Token', 'test')
+            
+            logger.debug(response.body);
+            expect(response.status).toBe(200);
+            expect(response.body.data).toBe('OK');
+    });
+
+    it('should reject to delete if id contact not found', async() => {
+
+        const contact = await ContactTest.get();
+        const response = await supertest(app)
+                .delete(`/api/contact/${contact.id + 1}`)
+                .set('X-API-key', apiKey!)
+                .set('X-Auth-Token', 'test')
+            
+            logger.debug(response.body);
+            expect(response.status).toBe(404);
+            expect(response.body.error).toBeDefined();
+    });
+    
+});

@@ -45,4 +45,19 @@ export class ContactController {
             next(e);
         }
     }
+
+    static async delete(req: UserRequest, res: Response, next: NextFunction) {
+        try {
+            const request = Number(req.params.contactId);
+            await ConatactService.delete(req.user!, request);
+            
+            res.status(200).json({
+                data: "OK"
+            })
+
+
+        } catch(e) {
+            next(e);
+        }
+    }
 }
