@@ -148,5 +148,80 @@ describe('GET /api/contact/:contactId', () => {
             expect(response.status).toBe(404);
             expect(response.body.error).toBeDefined();
     });
+
+});
+
+describe('POST /api/contact/:contactId', () => {
+    beforeEach(async () => {
+        await UserTest.createAuth();
+        await ContactTest.create();
+    });
     
+    afterEach(async () => {
+        await ContactTest.deleteAll();
+        await UserTest.delete();
+    });
+
+    it('Should able to update', async() => {
+
+        const contact = await ContactTest.get();
+        const response = await supertest(app)
+                .post(`/api/contact/${contact.id}`)
+                .set('X-API-key', apiKey!)
+                .set('X-Auth-Token', 'test')
+                .type('form')
+                .send({
+                    firstname: "Testi",
+                    lastname: "Lagi",
+                    email: "example@mail.com",
+                    phone: "08123456789"
+                });
+
+            logger.debug(response.body);
+            expect(response.status).toBe(200);
+            expect(response.body.data.id).toBe(contact.id);
+            expect(response.body.data.firstname).toBe("Testi");
+            expect(response.body.data.lastname).toBe("Lagi");
+            expect(response.body.data.email).toBe("example@mail.com");
+            expect(response.body.data.phone).toBe("08123456789");
+
+    });
+
+    it('should reject if input are invalid', async() =>{
+        const contact = await ContactTest.get();
+        const response = await supertest(app)
+                .post(`/api/contact/${contact.id}`)
+                .set('X-API-key', apiKey!)
+                .set('X-Auth-Token', 'test')
+                .type('form')
+                .send({
+                    firstname: "Testi",
+                    lastname: "Lagi",
+                    email: "example",
+                    phone: "081234567898398393893983938383292"
+                });
+                logger.debug(response.body);
+                expect(response.status).toBe(400);
+                expect(response.body.error).toBeDefined();
+    });
+
+    it('Should reject if contactId not macth', async() => {
+
+        const contact = await ContactTest.get();
+        const response = await supertest(app)
+                .post(`/api/contact/${contact.id + 1}`)
+                .set('X-API-key', apiKey!)
+                .set('X-Auth-Token', 'test')
+                .type('form')
+                .send({
+                    firstname: "Testi",
+                    lastname: "Lagi",
+                    email: "example@mail.com",
+                    phone: "08123456789"
+                });
+
+            logger.debug(response.body);
+            expect(response.status).toBe(404);
+            expect(response.body.error).toBeDefined();
+    });
 });

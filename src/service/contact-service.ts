@@ -1,5 +1,5 @@
-import type { User } from "@prisma/client";
-import { toContactRespose, type ContactResponse, type CreateContactRequest } from "../model/contact-model";
+import type { Contact, User } from "@prisma/client";
+import { toContactRespose, type ContactResponse, type CreateContactRequest, type UpdateContactRequest } from "../model/contact-model";
 import { ContactValidation } from "../validation/contact-validation";
 import { Validate } from "../validation/validation";
 import { prismaClient } from "../application/database";
@@ -27,20 +27,46 @@ export class ConatactService {
 
     }
 
-
-    static async get(user: User, id: number): Promise<ContactResponse> {
-
-        const contact = await prismaClient.contact.findFirst({
+    // refactor code agar lebih sedikit
+    static async checkContactMustExist(contactId: number, username: string): Promise<Contact> {
+         // search contact
+         const contact = await prismaClient.contact.findFirst({
             where: {
-                id: id,
-                username: user.username 
+                id: contactId,
+                username: username
             }
         });
 
         if (!contact) {
-            throw new ResponseError(404,"Contact not alredy exist");
+            throw new ResponseError(404, "Contact not Found");
         }
 
+        return contact;
+    }
+
+    static async get(user: User, id: number): Promise<ContactResponse> {
+
+        // check jika ada contact
+        const contact = await this.checkContactMustExist(id, user.username);
         return toContactRespose(contact);
+    }
+
+    static async update(user : User, id: number, request: UpdateContactRequest): Promise<ContactResponse> {
+        
+        // Validation request
+        const updateContact = Validate.validate(ContactValidation.UPDATE, request);
+        
+        await this.checkContactMustExist(id, user.username);
+       
+        const updateRequest = await prismaClient.contact.update({
+            where: {
+                id: id,
+                username: user.username
+            },
+            data: updateContact
+        });
+
+        return toContactRespose(updateRequest);
+        
     }
 }
