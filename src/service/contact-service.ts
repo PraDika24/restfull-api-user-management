@@ -3,6 +3,7 @@ import { toContactRespose, type ContactResponse, type CreateContactRequest } fro
 import { ContactValidation } from "../validation/contact-validation";
 import { Validate } from "../validation/validation";
 import { prismaClient } from "../application/database";
+import { ResponseError } from "../error/response-error";
 
 export class ConatactService {
 
@@ -24,5 +25,22 @@ export class ConatactService {
 
         return toContactRespose(contact)
 
+    }
+
+
+    static async get(user: User, id: number): Promise<ContactResponse> {
+
+        const contact = await prismaClient.contact.findFirst({
+            where: {
+                id: id,
+                username: user.username 
+            }
+        });
+
+        if (!contact) {
+            throw new ResponseError(404,"Contact not alredy exist");
+        }
+
+        return toContactRespose(contact);
     }
 }

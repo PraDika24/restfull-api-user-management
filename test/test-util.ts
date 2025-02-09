@@ -72,4 +72,30 @@ export class ContactTest {
             }
         })
     }
+
+    static async create() {
+        await prismaClient.contact.create({
+            data: {
+                firstname: 'Windah',
+                lastname: 'Basudara',
+                email: 'windah@mail.com',
+                phone: '08123456789',
+                username: 'userTest'
+            }
+        })
+    }
+
+    static async get() : Promise<Contact> {
+        const recordContact = await prismaClient.contact.findFirst({
+            where: {
+                username: "userTest"
+            }
+        });
+
+        if (!recordContact) {
+            throw new Error('Contact not Found')
+        }
+
+        return recordContact;
+    }
 }

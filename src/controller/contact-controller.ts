@@ -17,4 +17,18 @@ export class ContactController {
             next(e);
         }
     }
+
+    static async get(req: UserRequest, res: Response, next: NextFunction) {
+        try {
+            const request = Number(req.params.contactId);
+            const response = await ConatactService.get(req.user!, request);
+            res.status(200).json({
+                data: response
+            })
+
+
+        } catch(e) {
+            next(e);
+        }
+    }
 }

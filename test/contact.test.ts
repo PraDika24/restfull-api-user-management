@@ -3,6 +3,7 @@ import supertest from "supertest"
 import { apiKey, ContactTest, UserTest } from "./test-util";
 import { app } from "../src/application/web";
 import { logger } from "../src/application/logging";
+import { prismaClient } from "../src/application/database";
 
 describe('POST /api/contact', () => {
          beforeEach(async () => {
@@ -103,4 +104,49 @@ describe('POST /api/contact', () => {
         });
 
 
+});
+
+
+describe('GET /api/contact/:contactId', () => {
+    
+    beforeEach(async () => {
+        await UserTest.createAuth();
+        await ContactTest.create();
+    });
+    
+    afterEach(async () => {
+        await ContactTest.deleteAll();
+        await UserTest.delete();
+    });
+
+    it('should able to get contact', async() => {
+
+        const contact = await ContactTest.get();
+        const response = await supertest(app)
+                .get(`/api/contact/${contact.id}`)
+                .set('X-API-key', apiKey!)
+                .set('X-Auth-Token', 'test')
+            
+            logger.debug(response.body);
+            expect(response.status).toBe(200);
+            expect(response.body.data.id).toBe(contact.id);
+            expect(response.body.data.firstname).toBe("Windah");
+            expect(response.body.data.lastname).toBe("Basudara");
+            expect(response.body.data.email).toBe("windah@mail.com");
+            expect(response.body.data.phone).toBe("08123456789");
+    });
+
+    it('should reject to get contact', async() => {
+
+        const contact = await ContactTest.get();
+        const response = await supertest(app)
+                .get(`/api/contact/${contact.id + 1}`)
+                .set('X-API-key', apiKey!)
+                .set('X-Auth-Token', 'test')
+            
+            logger.debug(response.body);
+            expect(response.status).toBe(404);
+            expect(response.body.error).toBeDefined();
+    });
+    
 });
