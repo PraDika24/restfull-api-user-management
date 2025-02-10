@@ -16,3 +16,4 @@ authRouter.post('/api/contact', ContactController.create);
 authRouter.get('/api/contact/:contactId(\\d+)', ContactController.get);
 authRouter.post('/api/contact/:contactId(\\d+)', ContactController.update);
 authRouter.delete('/api/contact/:contactId(\\d+)', ContactController.delete);
+authRouter.get('/api/contact)', ContactController.search);

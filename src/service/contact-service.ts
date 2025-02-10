@@ -1,9 +1,10 @@
 import type { Contact, User } from "@prisma/client";
-import { toContactRespose, type ContactResponse, type CreateContactRequest, type UpdateContactRequest } from "../model/contact-model";
+import { toContactRespose, type ContactResponse, type CreateContactRequest, type SearchContactRequest, type UpdateContactRequest } from "../model/contact-model";
 import { ContactValidation } from "../validation/contact-validation";
 import { Validate } from "../validation/validation";
 import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
+import type { Pageable } from "../model/page";
 
 export class ConatactService {
 
@@ -81,5 +82,84 @@ export class ConatactService {
         });
 
         return toContactRespose(deleteContact);
+    }
+
+    static async search(user: User, request: SearchContactRequest):Promise<Pageable<ContactResponse>> {
+
+        // Validation requset
+        const searchRequest = Validate.validate(ContactValidation.SEARCH, request);
+
+        // untuk menghitung berapa data yang dilewati
+        const skip = (searchRequest.page - 1) * searchRequest.size;
+
+        const filter = []
+
+        // Cek jika ada nama
+
+        if (searchRequest.name) {
+            filter.push({
+                OR: [
+                    {
+                        firstname: {
+                            contains: searchRequest.name
+                        }
+                    },
+                    {
+                        lastname: {
+                            contains: searchRequest.name
+                        }
+                    }
+                ]
+            })
+        }
+
+        // Cek jika ada email
+        if (searchRequest.email) {
+            filter.push({
+                email: {
+                    contains: searchRequest.email
+                }
+            })
+        }
+
+        // Cek jika ada phone
+        if (searchRequest.phone) {
+            filter.push({
+                phone: {
+                    contains: searchRequest.phone
+                }
+            })
+        }
+
+        
+        const contacts = await prismaClient.contact.findMany({
+            where: {
+                username: user.username,
+                AND: filter
+            },
+            take : searchRequest.size, // jumlah data yang akan ditampilkan
+            skip: skip //jumlah data yang dilewatkan
+
+        });
+
+        // menghitung total data
+        const totalData = await prismaClient.contact.count({
+            where: {
+                username: user.username,
+                AND: filter
+            }
+        });
+
+
+
+        return {
+            data: contacts.map(contact => toContactRespose(contact)),
+            paging: {
+                current_page: searchRequest.page,
+                total_page: Math.ceil( totalData / searchRequest.size ),
+                size: searchRequest.size
+            }
+        }
+       
     }
 }
