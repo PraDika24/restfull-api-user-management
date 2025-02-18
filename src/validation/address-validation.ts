@@ -22,5 +22,8 @@ export class AddressValidation {
         .string()
         .min(1, { message: "harus terdiri dari minimal 1 karakter."})
         .max(100, { message: "harus terdiri dari maxsimal 100 karakter."}),
+        contact_id: z
+        .number()
+        .positive({ message: "harus bilangan positif"})
     });
 }
