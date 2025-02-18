@@ -1,9 +1,10 @@
+import { app } from "../src/application/web";
 import { it, describe, expect, afterEach, beforeEach } from "bun:test"
 import supertest from "supertest"
 import { apiKey, ContactTest, UserTest } from "./test-util";
-import { app } from "../src/application/web";
 import { logger } from "../src/application/logging";
-import { prismaClient } from "../src/application/database";
+
+
 
 describe('POST /api/contact', () => {
          beforeEach(async () => {
@@ -265,5 +266,55 @@ describe('DELETE /api/contact/:contactId', () => {
             expect(response.status).toBe(404);
             expect(response.body.error).toBeDefined();
     });
+    
+});
+
+
+describe('GET /api/contact', () => {
+
+    beforeEach(async () => {
+        await UserTest.createAuth();
+        await ContactTest.create();
+    });
+    
+    afterEach(async () => {
+        await ContactTest.deleteAll();
+        await UserTest.delete();
+    });
+
+    it('Should able to search', async() => {
+
+        const response = await supertest(app)
+            .get('/api/contact/')
+            .set('X-API-key', apiKey!)
+            .set('X-Auth-Token', 'test')
+
+        logger.debug(response.body);
+        expect(response.status).toBe(200);
+        expect(response.body.data.length).toBe(1);
+        expect(response.body.paging.current_page).toBe(1);
+        expect(response.body.paging.size).toBe(10);
+        expect(response.body.paging.total_page).toBe(1)
+        
+    });
+
+
+    it('Should be able to search based guery param', async() =>{
+        const response = await supertest(app)
+                    .get('/api/contact/')
+                    .set('X-API-key', apiKey!)
+                    .set('X-Auth-Token', 'test')
+                    .query({
+                        phone: '89'
+                    })
+
+                logger.debug(response.body);
+                expect(response.status).toBe(200);
+                expect(response.body.data.length).toBe(1);
+                expect(response.body.paging.current_page).toBe(1);
+                expect(response.body.paging.size).toBe(10);
+                expect(response.body.paging.total_page).toBe(1)
+    });
+
     
 });
