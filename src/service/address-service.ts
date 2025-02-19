@@ -1,10 +1,11 @@
-import type { User } from "@prisma/client";
-import { toAddressResponse, type AddressResponse, type CreateAddressRequest, type GetAddress } from "../model/address-model";
+import type { Address, User } from "@prisma/client";
+import { toAddressResponse, type AddressResponse, type CreateAddressRequest, type GetAddress, type UpdateAddressRequest } from "../model/address-model";
 import { Validate } from "../validation/validation";
 import { AddressValidation } from "../validation/address-validation";
 import { ConatactService } from "./contact-service";
 import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
+import { add } from "winston";
 
 export class AddressService {
     static async create(user:  User, request: CreateAddressRequest): Promise<AddressResponse> {
@@ -22,29 +23,54 @@ export class AddressService {
         return toAddressResponse(response);
     }
 
+    //refactor code
+
+    static async checkAddressMustExist(contactId: number, addressId: number): Promise<Address> {
+
+     //mencari data address id
+     const address = await prismaClient.address.findFirst({
+        where:{
+            id: addressId,
+            contact_id: contactId
+        }
+     });
+
+     if (!address) {
+        throw new ResponseError(404,"Address Not Found")
+     }
+
+     return address; // dalam bentuk tipe Address Prisma Client 
+
+    }
+
 
     static async get(user: User, request: GetAddress): Promise<AddressResponse> {
         // validasi
         const getRequest = Validate.validate(AddressValidation.GET, request);
 
-        console.log(`Mencari address dengan id: ${getRequest.addressId} dan contactId: ${getRequest.contactId}`);
-
-
          //check jika ada id request param ada di database tabel contact
-         await ConatactService.checkContactMustExist(request.contactId, user.username);
+         await ConatactService.checkContactMustExist(getRequest.contactId, user.username);
+         // check jika ada address
+         const address = await this.checkAddressMustExist(getRequest.contactId, getRequest.addressId);
 
-         //mencari data address id
-         const recordAddress = await prismaClient.address.findFirst({
+         return address;
+    }
+
+    static async update(user: User, request: UpdateAddressRequest): Promise<AddressResponse> {
+        // validasi
+        const updateRequest = Validate.validate(AddressValidation.UPDATE, request);
+
+        //check jika ada id request param ada di database tabel contact
+        await ConatactService.checkContactMustExist(updateRequest.contact_id, user.username);
+
+        const address = await prismaClient.address.update({
             where:{
-                id: getRequest.addressId,
-                contact_id: getRequest.contactId
-            }
-         });
+                id: updateRequest.id,
+                contact_id: updateRequest.contact_id
+            },
+            data: updateRequest
+        });
+        return toAddressResponse(address);
 
-         if (!recordAddress) {
-            throw new ResponseError(404,"Address Not Found")
-         }
-
-         return toAddressResponse(recordAddress);
     }
 }

@@ -167,7 +167,7 @@ describe('POST /api/contact/:contactId', () => {
 
         const contact = await ContactTest.get();
         const response = await supertest(app)
-                .post(`/api/contact/${contact.id}`)
+                .put(`/api/contact/${contact.id}`)
                 .set('X-API-key', apiKey!)
                 .set('X-Auth-Token', 'test')
                 .type('form')
@@ -191,7 +191,7 @@ describe('POST /api/contact/:contactId', () => {
     it('should reject if input are invalid', async() =>{
         const contact = await ContactTest.get();
         const response = await supertest(app)
-                .post(`/api/contact/${contact.id}`)
+                .put(`/api/contact/${contact.id}`)
                 .set('X-API-key', apiKey!)
                 .set('X-Auth-Token', 'test')
                 .type('form')
@@ -210,7 +210,7 @@ describe('POST /api/contact/:contactId', () => {
 
         const contact = await ContactTest.get();
         const response = await supertest(app)
-                .post(`/api/contact/${contact.id + 1}`)
+                .put(`/api/contact/${contact.id + 1}`)
                 .set('X-API-key', apiKey!)
                 .set('X-Auth-Token', 'test')
                 .type('form')

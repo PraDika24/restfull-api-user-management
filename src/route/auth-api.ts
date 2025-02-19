@@ -15,10 +15,11 @@ authRouter.delete('/api/users/current', UserController.logout);
 // Contact API
 authRouter.post('/api/contact', ContactController.create);
 authRouter.get('/api/contact/:contactId(\\d+)', ContactController.get);
-authRouter.post('/api/contact/:contactId(\\d+)', ContactController.update);
+authRouter.put('/api/contact/:contactId(\\d+)', ContactController.update);
 authRouter.delete('/api/contact/:contactId(\\d+)', ContactController.delete);
 authRouter.get('/api/contact', ContactController.search);
 
 // Address API
 authRouter.post('/api/contact/:contactId(\\d+)/addresses', AddressController.create);
 authRouter.get('/api/contact/:contactId(\\d+)/addresses/:addressId(\\d+)', AddressController.get);
+authRouter.put('/api/contact/:contactId(\\d+)/addresses/:addressId(\\d+)', AddressController.update);
