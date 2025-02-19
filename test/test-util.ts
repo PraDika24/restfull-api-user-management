@@ -1,4 +1,4 @@
-import type { Contact, User } from "@prisma/client";
+import type { Address, Contact, User } from "@prisma/client";
 import { prismaClient } from "../src/application/database";
 
 export const apiKey = Bun.env.API_KEY;
@@ -110,5 +110,36 @@ export class AddressTest {
                 }
             }
         })
+    }
+
+    static async create() {
+        const contact = await ContactTest.get();
+        await prismaClient.address.create({
+            data: {
+                contact_id: contact.id,
+                street: 'jalan test',
+                city: 'city test',
+                province: 'province test',
+                country: 'country test',
+                postal_code: '1234'
+            }
+        })
+    }
+
+    static async get() : Promise<Address>{
+
+        const address = await prismaClient.address.findFirst({
+            where: {
+                contact: {
+                    username: 'userTest'
+                }
+            }
+        });
+
+        if(!address) {
+            throw new Error('Address Not Found')
+        }
+
+        return address;
     }
 }

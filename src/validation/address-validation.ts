@@ -26,4 +26,13 @@ export class AddressValidation {
         .number()
         .positive({ message: "harus bilangan positif"})
     });
+
+    static readonly GET: ZodType = z.object({
+        contactId: z
+        .number()
+        .positive({ message: "harus bilangan positif"}),
+        addressId: z
+        .number()
+        .positive({ message: "harus bilangan positif"})
+    })
 }

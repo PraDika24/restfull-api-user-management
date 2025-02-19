@@ -61,3 +61,67 @@ describe('POST /api/contact/:contactId(\\d+)/addresses', function() {
             expect(response.body.error).toBeDefined();
     });
 });
+
+
+
+describe('GET /api/contact/:contactId(\\d+)/addresses/:addressId(\\d+)', function() {
+    beforeEach(async () => {
+        await UserTest.createAuth();
+        await ContactTest.create();
+        await AddressTest.create();
+    });
+    
+    afterEach(async () => {
+        await AddressTest.deleteAll();
+        await ContactTest.deleteAll();
+        await UserTest.delete();
+    });
+
+    it('should able to get', async () => {
+
+        const contact = await ContactTest.get();
+        const address = await AddressTest.get();
+
+
+        console.log('Ini id contact :', contact.id);
+        console.log('Ini id address :', address.id);
+
+
+        const response = await supertest(app)
+                .get(`/api/contact/${contact.id}/addresses/${address.id}`)
+                .set('X-API-key', apiKey!)
+                .set('X-Auth-Token', 'test')
+
+            console.log(response.body)
+
+            expect(response.status).toBe(200);
+            expect(response.body.data.street).toBe("jalan test");
+            expect(response.body.data.city).toBe("city test");
+            expect(response.body.data.province).toBe("province test");
+            expect(response.body.data.country).toBe("country test");
+            expect(response.body.data.postal_code).toBe("1234");
+    });
+
+    it('should able to get', async () => {
+
+        const contact = await ContactTest.get();
+        const address = await AddressTest.get();
+
+
+
+
+        const response = await supertest(app)
+                .get(`/api/contact/${contact.id}/addresses/${address.id + 1}`)
+                .set('X-API-key', apiKey!)
+                .set('X-Auth-Token', 'test')
+            
+            logger.debug(response.body);
+            expect(response.status).toBe(404);
+            expect(response.body.error).toBeDefined();
+           
+    });
+
+
+ 
+  
+});

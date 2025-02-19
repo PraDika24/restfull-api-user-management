@@ -18,6 +18,11 @@ export type CreateAddressRequest = {
     contact_id: number;
 }
 
+export type  GetAddress = {
+    contactId: number;
+    addressId: number;
+}
+
 export function toAddressResponse ( address: Address ) : AddressResponse {
     
     return {
