@@ -87,8 +87,7 @@ describe('GET /api/contact/:contactId(\\d+)/addresses/:addressId(\\d+)', functio
                 .set('X-API-key', apiKey!)
                 .set('X-Auth-Token', 'test')
 
-            console.log(response.body)
-
+            logger.debug(response.body);
             expect(response.status).toBe(200);
             expect(response.body.data.street).toBe("jalan test");
             expect(response.body.data.city).toBe("city test");
@@ -146,7 +145,7 @@ describe('PUT /api/contact/:contactId(\\d+)/addresses/:addressId(\\d+)', functio
                     postal_code: '1234'
                 })
 
-            console.log(response.body)
+            logger.debug(response.body);
 
             expect(response.status).toBe(200);
             expect(response.body.data.street).toBe("jalan bocil");
@@ -202,9 +201,8 @@ describe('DELETE /api/contact/:contactId(\\d+)/addresses/:addressId(\\d+)', func
                 .delete(`/api/contact/${contact.id}/addresses/${address.id}`)
                 .set('X-API-key', apiKey!)
                 .set('X-Auth-Token', 'test')
-
-            console.log(response.body)
-
+            
+            logger.debug(response.body);
             expect(response.status).toBe(200);
             expect(response.body.data).toBe("OK");
     });
@@ -222,5 +220,48 @@ describe('DELETE /api/contact/:contactId(\\d+)/addresses/:addressId(\\d+)', func
             logger.debug(response.body);
             expect(response.status).toBe(404);
             expect(response.body.error).toBeDefined();           
+    });
+});
+
+
+describe('GET /api/contact/:contactId(\\d+)/addresses', function() {
+    beforeEach(async () => {
+        await UserTest.createAuth();
+        await ContactTest.create();
+        await AddressTest.create();
+    });
+    
+    afterEach(async () => {
+        await AddressTest.deleteAll();
+        await ContactTest.deleteAll();
+        await UserTest.delete();
+    });
+
+    it('should able to get list all address', async () => {
+
+        const contact = await ContactTest.get();
+        const response = await supertest(app)
+                .get(`/api/contact/${contact.id}/addresses`)
+                .set('X-API-key', apiKey!)
+                .set('X-Auth-Token', 'test')
+
+            logger.debug(response.body);
+            expect(response.status).toBe(200);
+            expect(response.body.data.length).toBe(1);
+    });
+
+    it('should reject if invalid params', async () => {
+
+        const contact = await ContactTest.get();
+
+        const response = await supertest(app)
+                .get(`/api/contact/${contact.id + 1}/addresses`)
+                .set('X-API-key', apiKey!)
+                .set('X-Auth-Token', 'test')
+            
+            logger.debug(response.body);
+            expect(response.status).toBe(404);
+            expect(response.body.error).toBeDefined();
+           
     });
 });

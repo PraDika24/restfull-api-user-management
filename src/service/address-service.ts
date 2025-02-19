@@ -78,7 +78,7 @@ export class AddressService {
         // validasi
         const removeRequest = Validate.validate(AddressValidation.REMOVE, request);
 
-         //check jika ada id request param ada di database tabel contact
+        //check jika ada id request param ada di database tabel contact
         await ConatactService.checkContactMustExist(removeRequest.contactId, user.username);
          // check jika ada address
         await this.checkAddressMustExist(removeRequest.contactId, removeRequest.addressId);
@@ -91,6 +91,20 @@ export class AddressService {
         });
 
         return toAddressResponse(address);
+    }
+
+    static async list(user: User, contactId: number): Promise<Array<AddressResponse>> {
+        
+        //check jika ada id request param ada di database tabel contact
+        await ConatactService.checkContactMustExist(contactId, user.username);
+
+        const address = await prismaClient.address.findMany({
+            where: {
+                contact_id: contactId
+            }
+        });
+
+        return address.map((address) => toAddressResponse(address));
     }
 
 
