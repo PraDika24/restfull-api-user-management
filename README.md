@@ -1,15 +1,20 @@
-# api-contact-management
+# Set Up Project
 
-To install dependencies:
+1. Create .env
 
-```bash
-bun install
-```
+    ```
+    DATABASE_URL="mysql://USER:PASSWORD@localhost:3306/DATABASE_NAME"
+    API_KEY="Your_Api_Key"
+    ```
 
-To run:
+2. To run:
 
-```bash
-bun run index.ts
-```
+    ```shell
+    bun install
 
-This project was created using `bun init` in bun v1.2.1. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+    bunx prisma migrate dev
+
+    bunx prisma generate
+
+    bun run start
+    ```
