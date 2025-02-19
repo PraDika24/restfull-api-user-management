@@ -39,6 +39,15 @@ export class AddressValidation {
         .positive({ message: "harus bilangan positif"})
     });
 
+    static readonly REMOVE: ZodType = z.object({
+        contactId: z
+        .number()
+        .positive({ message: "harus bilangan positif"}),
+        addressId: z
+        .number()
+        .positive({ message: "harus bilangan positif"})
+    });
+
     static readonly UPDATE: ZodType = z.object({
         id: z
         .number()

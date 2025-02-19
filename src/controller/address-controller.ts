@@ -1,6 +1,6 @@
 import type { Response, NextFunction } from "express";
 import type { UserRequest } from "../type/user-request";
-import type { CreateAddressRequest, GetAddress, UpdateAddressRequest } from "../model/address-model";
+import type { CreateAddressRequest, GetAddress, RemoveAddress, UpdateAddressRequest } from "../model/address-model";
 import { AddressService } from "../service/address-service";
 
 export class AddressController {
@@ -25,7 +25,6 @@ export class AddressController {
                 addressId: Number(req.params.addressId),
             }
 
-            console.log('ini request controller', request);
             const response = await AddressService.get(req.user!, request);
             res.status(200).json({
                 data: response
@@ -43,10 +42,27 @@ export class AddressController {
             request.id = Number(req.params.addressId);
             request.contact_id = Number(req.params.contactId)
 
-            console.log('ini request controller', request);
             const response = await AddressService.update(req.user!, request);
             res.status(200).json({
                 data: response
+            });
+
+        } catch(e) {
+            next(e)
+        }
+    }
+
+
+    static async remove(req: UserRequest, res: Response, next: NextFunction) {
+        try {
+            const request : RemoveAddress = {
+                contactId: Number(req.params.contactId),
+                addressId: Number(req.params.addressId),
+            }
+
+            await AddressService.remove(req.user!, request);
+            res.status(200).json({
+                data: 'OK'
             });
 
         } catch(e) {

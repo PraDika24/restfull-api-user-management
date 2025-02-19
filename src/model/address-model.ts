@@ -33,6 +33,8 @@ export type  GetAddress = {
     addressId: number;
 }
 
+export type  RemoveAddress = GetAddress;
+
 export function toAddressResponse ( address: Address ) : AddressResponse {
     
     return {

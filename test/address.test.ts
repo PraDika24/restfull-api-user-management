@@ -112,10 +112,6 @@ describe('GET /api/contact/:contactId(\\d+)/addresses/:addressId(\\d+)', functio
             expect(response.body.error).toBeDefined();
            
     });
-
-
- 
-  
 });
 
 
@@ -182,4 +178,49 @@ describe('PUT /api/contact/:contactId(\\d+)/addresses/:addressId(\\d+)', functio
            
     });
   
+});
+
+describe('DELETE /api/contact/:contactId(\\d+)/addresses/:addressId(\\d+)', function() {
+    beforeEach(async () => {
+        await UserTest.createAuth();
+        await ContactTest.create();
+        await AddressTest.create();
+    });
+    
+    afterEach(async () => {
+        await AddressTest.deleteAll();
+        await ContactTest.deleteAll();
+        await UserTest.delete();
+    });
+
+    it('should able to remove', async () => {
+
+        const contact = await ContactTest.get();
+        const address = await AddressTest.get();
+
+        const response = await supertest(app)
+                .delete(`/api/contact/${contact.id}/addresses/${address.id}`)
+                .set('X-API-key', apiKey!)
+                .set('X-Auth-Token', 'test')
+
+            console.log(response.body)
+
+            expect(response.status).toBe(200);
+            expect(response.body.data).toBe("OK");
+    });
+
+    it('should reject if invalid params', async () => {
+
+        const contact = await ContactTest.get();
+        const address = await AddressTest.get();
+
+        const response = await supertest(app)
+                .delete(`/api/contact/${contact.id}/addresses/${address.id + 1}`)
+                .set('X-API-key', apiKey!)
+                .set('X-Auth-Token', 'test')
+            
+            logger.debug(response.body);
+            expect(response.status).toBe(404);
+            expect(response.body.error).toBeDefined();           
+    });
 });

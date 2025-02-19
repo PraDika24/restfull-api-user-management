@@ -23,3 +23,4 @@ authRouter.get('/api/contact', ContactController.search);
 authRouter.post('/api/contact/:contactId(\\d+)/addresses', AddressController.create);
 authRouter.get('/api/contact/:contactId(\\d+)/addresses/:addressId(\\d+)', AddressController.get);
 authRouter.put('/api/contact/:contactId(\\d+)/addresses/:addressId(\\d+)', AddressController.update);
+authRouter.delete('/api/contact/:contactId(\\d+)/addresses/:addressId(\\d+)', AddressController.remove);

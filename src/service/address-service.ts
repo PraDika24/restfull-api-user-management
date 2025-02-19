@@ -1,5 +1,5 @@
 import type { Address, User } from "@prisma/client";
-import { toAddressResponse, type AddressResponse, type CreateAddressRequest, type GetAddress, type UpdateAddressRequest } from "../model/address-model";
+import { toAddressResponse, type AddressResponse, type CreateAddressRequest, type GetAddress, type RemoveAddress, type UpdateAddressRequest } from "../model/address-model";
 import { Validate } from "../validation/validation";
 import { AddressValidation } from "../validation/address-validation";
 import { ConatactService } from "./contact-service";
@@ -53,7 +53,7 @@ export class AddressService {
          // check jika ada address
          const address = await this.checkAddressMustExist(getRequest.contactId, getRequest.addressId);
 
-         return address;
+         return toAddressResponse(address);
     }
 
     static async update(user: User, request: UpdateAddressRequest): Promise<AddressResponse> {
@@ -73,4 +73,25 @@ export class AddressService {
         return toAddressResponse(address);
 
     }
+
+    static async remove(user: User, request: RemoveAddress): Promise<AddressResponse> {
+        // validasi
+        const removeRequest = Validate.validate(AddressValidation.REMOVE, request);
+
+         //check jika ada id request param ada di database tabel contact
+        await ConatactService.checkContactMustExist(removeRequest.contactId, user.username);
+         // check jika ada address
+        await this.checkAddressMustExist(removeRequest.contactId, removeRequest.addressId);
+
+        const address = await prismaClient.address.delete({
+            where:{
+                id: removeRequest.addressId,
+                contact_id: removeRequest.contactId
+            }
+        });
+
+        return toAddressResponse(address);
+    }
+
+
 }
